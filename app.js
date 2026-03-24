@@ -25,7 +25,7 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
         const preferredLocation = JSON.parse(preferredLocations);
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
   secure: false,
   requireTLS: true,
             auth: {
@@ -80,7 +80,7 @@ app.post("/api/v1/contact", async (req, res) => {
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-  port: 587,
+  port: 465,
   secure: false,
   requireTLS: true,
       auth: {
