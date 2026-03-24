@@ -18,11 +18,16 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
         const resume = req.file;
         const preferredLocation = JSON.parse(preferredLocations);
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: process.env.SMTP_EMAIL,
                 pass: process.env.SMTP_PASS,
-            }
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
         })
         await transporter.sendMail({
             from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
@@ -50,7 +55,7 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.error(err);
+        console.error(error);
         res.status(500).json({ error: "Failed to send email" });
     }
 })
@@ -67,11 +72,16 @@ app.post("/api/v1/contact", async (req, res) => {
     }
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASS,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     await transporter.sendMail({
