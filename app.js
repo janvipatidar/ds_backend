@@ -9,11 +9,15 @@ const nodemailer = require("nodemailer")
 const upload = multer({ dest: "uploads/" });
 const PORT = process.env.PORT || 5000;
 
+const dns = require("dns");
+
+dns.setDefaultResultOrder("ipv4first");
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
  console.log("first" , process.env.SMTP_EMAIL,process.env.SMTP_PASS,)
- 
+
 app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
     try {
         const { name, email, phone, profile, currentLocation, preferredLocations, message } = req.body;
@@ -21,15 +25,16 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
         const preferredLocation = JSON.parse(preferredLocations);
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
+  port: 587,
+  secure: false,
+  requireTLS: true,
             auth: {
                 user: process.env.SMTP_EMAIL,
                 pass: process.env.SMTP_PASS,
             },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
+            // connectionTimeout: 10000,
+            // greetingTimeout: 10000,
+            // socketTimeout: 10000,
         })
         await transporter.sendMail({
             from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
@@ -75,15 +80,16 @@ app.post("/api/v1/contact", async (req, res) => {
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+  port: 587,
+  secure: false,
+  requireTLS: true,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASS,
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      // connectionTimeout: 10000,
+      // greetingTimeout: 10000,
+      // socketTimeout: 10000,
     });
 
     await transporter.sendMail({
