@@ -7,6 +7,7 @@ const multer = require("multer");
 const fs = require("fs");
 const nodemailer = require("nodemailer")
 const upload = multer({ dest: "uploads/" });
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -107,4 +108,4 @@ app.post("/api/v1/contact", async (req, res) => {
 
 app.get("/", (req, res) => res.send("Job API Running 🚀"));
 
-app.listen(5000, () => console.log("Server running on 5000"));
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
