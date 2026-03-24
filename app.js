@@ -12,7 +12,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+ console.log("first" , process.env.SMTP_EMAIL,process.env.SMTP_PASS,)
+ 
 app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
     try {
         const { name, email, phone, profile, currentLocation, preferredLocations, message } = req.body;
