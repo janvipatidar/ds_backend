@@ -1,47 +1,181 @@
+// const express = require("express");
+// const app = express();
+// const cors = require("cors");
+// const bodyparser = require("body-parser");
+// require("dotenv").config();
+// const multer = require("multer");
+// const fs = require("fs");
+// const nodemailer = require("nodemailer")
+// const upload = multer({ dest: "uploads/" });
+// const PORT = process.env.PORT || 5000;
+
+// const dns = require("dns");
+
+// dns.setDefaultResultOrder("ipv4first");
+
+// app.use(cors());
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+//  console.log("first" , process.env.SMTP_EMAIL,process.env.SMTP_PASS,)
+
+// app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
+//     try {
+//         const { name, email, phone, profile, currentLocation, preferredLocations, message } = req.body;
+//         const resume = req.file;
+//         const preferredLocation = JSON.parse(preferredLocations);
+//         const transporter = nodemailer.createTransport({
+//             host: "smtp.gmail.com",
+//   port: 465,
+//   secure: false,
+//   requireTLS: true,
+//             auth: {
+//                 user: process.env.SMTP_EMAIL,
+//                 pass: process.env.SMTP_PASS,
+//             },
+//             connectionTimeout: 10000,
+//             greetingTimeout: 10000,
+//             socketTimeout: 10000,
+//         })
+//         await transporter.sendMail({
+//             from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
+//             to: process.env.RECEIVER_EMAIL,
+//             subject: `New Job Application - ${profile}`,
+//             html: `
+//          <h3>New Job Application</h3>
+//         <p><b>Name:</b> ${name}</p>
+//         <p><b>Email:</b> ${email}</p>
+//         <p><b>Phone:</b> ${phone}</p>
+//         <p><b>Profile:</b> ${profile}</p>
+//         <p><b>Current Location:</b> ${currentLocation}</p>
+//         <p><b>Preferred Locations:</b> ${preferredLocation.join(", ")}</p>
+//         <p><b>Message:</b> ${message || "-"}</p>
+//       `,
+//             attachments: [
+//                 {
+//                     filename: resume.originalname,
+//                     path: resume.path,
+//                 },
+//             ],
+//         });
+
+//         fs.unlinkSync(resume.path);
+
+//         res.json({ success: true });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: "Failed to send email" });
+//     }
+// })
+
+
+// app.post("/api/v1/contact", async (req, res) => {
+//   try {
+//     console.log("req body:", req.body);
+
+//     const { name, email, phone, message } = req.body;
+
+//     if (!name || !email || !phone || !message) {
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+
+//     const transporter = nodemailer.createTransport({
+//       host: "smtp.gmail.com",
+//   port: 465,
+//   secure: false,
+//   requireTLS: true,
+//       auth: {
+//         user: process.env.SMTP_EMAIL,
+//         pass: process.env.SMTP_PASS,
+//       },
+//       connectionTimeout: 10000,
+//       greetingTimeout: 10000,
+//       socketTimeout: 10000,
+//     });
+
+//     await transporter.sendMail({
+//       from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
+//       to: process.env.RECEIVER_EMAIL,
+//       subject: `Contact By - ${name}`,
+//       html: `
+//         <h3>New Contact Message</h3>
+//         <p><b>Name:</b> ${name}</p>
+//         <p><b>Email:</b> ${email}</p>
+//         <p><b>Phone:</b> ${phone}</p>
+//         <p><b>Message:</b> ${message}</p>
+//       `,
+//     });
+
+//     res.status(200).json({ success: true });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Failed to send email" });
+//   }
+// });
+
+
+// app.get("/", (req, res) => res.send("Job API Running 🚀"));
+
+// app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
+
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyparser = require("body-parser");
 require("dotenv").config();
 const multer = require("multer");
 const fs = require("fs");
-const nodemailer = require("nodemailer")
-const upload = multer({ dest: "uploads/" });
-const PORT = process.env.PORT || 5000;
-
+const nodemailer = require("nodemailer");
 const dns = require("dns");
 
 dns.setDefaultResultOrder("ipv4first");
 
+const upload = multer({ dest: "uploads/" });
+const PORT = process.env.PORT || 5000;
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
- console.log("first" , process.env.SMTP_EMAIL,process.env.SMTP_PASS,)
 
-app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
-    try {
-        const { name, email, phone, profile, currentLocation, preferredLocations, message } = req.body;
-        const resume = req.file;
-        const preferredLocation = JSON.parse(preferredLocations);
-        const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-  port: 465,
+console.log("SMTP:", process.env.SMTP_EMAIL);
+
+// Create transporter ONCE (not inside routes)
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
   secure: false,
-  requireTLS: true,
-            auth: {
-                user: process.env.SMTP_EMAIL,
-                pass: process.env.SMTP_PASS,
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-        })
-        await transporter.sendMail({
-            from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
-            to: process.env.RECEIVER_EMAIL,
-            subject: `New Job Application - ${profile}`,
-            html: `
-         <h3>New Job Application</h3>
+  auth: {
+    user: process.env.SMTP_EMAIL,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
+
+// ================= APPLY API =================
+app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      profile,
+      currentLocation,
+      preferredLocations,
+      message,
+    } = req.body;
+
+    const resume = req.file;
+    const preferredLocation = JSON.parse(preferredLocations);
+
+    await transporter.sendMail({
+      from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
+      to: process.env.RECEIVER_EMAIL,
+      subject: `New Job Application - ${profile}`,
+      html: `
+        <h3>New Job Application</h3>
         <p><b>Name:</b> ${name}</p>
         <p><b>Email:</b> ${email}</p>
         <p><b>Phone:</b> ${phone}</p>
@@ -50,24 +184,26 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
         <p><b>Preferred Locations:</b> ${preferredLocation.join(", ")}</p>
         <p><b>Message:</b> ${message || "-"}</p>
       `,
-            attachments: [
-                {
-                    filename: resume.originalname,
-                    path: resume.path,
-                },
-            ],
-        });
+      attachments: [
+        {
+          filename: resume.originalname,
+          path: resume.path,
+        },
+      ],
+    });
 
-        fs.unlinkSync(resume.path);
+    // Delete uploaded file after sending email
+    fs.unlinkSync(resume.path);
 
-        res.json({ success: true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to send email" });
-    }
-})
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Apply Error:", error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+});
 
 
+// ================= CONTACT API =================
 app.post("/api/v1/contact", async (req, res) => {
   try {
     console.log("req body:", req.body);
@@ -77,20 +213,6 @@ app.post("/api/v1/contact", async (req, res) => {
     if (!name || !email || !phone || !message) {
       return res.status(400).json({ error: "All fields are required" });
     }
-
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-  port: 465,
-  secure: false,
-  requireTLS: true,
-      auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASS,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
 
     await transporter.sendMail({
       from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
@@ -107,12 +229,15 @@ app.post("/api/v1/contact", async (req, res) => {
 
     res.status(200).json({ success: true });
   } catch (error) {
-    console.error(error);
+    console.error("Contact Error:", error);
     res.status(500).json({ error: "Failed to send email" });
   }
 });
 
 
+// ================= ROOT =================
 app.get("/", (req, res) => res.send("Job API Running 🚀"));
 
+
+// ================= SERVER =================
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
