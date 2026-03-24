@@ -32,9 +32,9 @@ app.post("/api/v1/apply", upload.single("resume"), async (req, res) => {
                 user: process.env.SMTP_EMAIL,
                 pass: process.env.SMTP_PASS,
             },
-            // connectionTimeout: 10000,
-            // greetingTimeout: 10000,
-            // socketTimeout: 10000,
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 10000,
         })
         await transporter.sendMail({
             from: `"Job Portal" <${process.env.SMTP_EMAIL}>`,
@@ -87,9 +87,9 @@ app.post("/api/v1/contact", async (req, res) => {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASS,
       },
-      // connectionTimeout: 10000,
-      // greetingTimeout: 10000,
-      // socketTimeout: 10000,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     await transporter.sendMail({
